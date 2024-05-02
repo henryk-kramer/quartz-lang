@@ -1,0 +1,156 @@
+(*
+    Boolean literal
+*)
+boolean_literal
+    = "true"
+    | "false"
+    ;
+
+(*
+    Symbol literal
+*)
+symbol_literal
+    = "'" , character_with_digit
+    ;
+
+(*
+    String literal
+*)
+escape_double_quotes
+    = backslash , dqoute
+    ;
+
+escape_backslash
+    = backslash , backslash
+    ;
+
+escaped_string_characters
+    = backslash
+    | dqoute
+    ;
+
+string_content
+    = escape_double_quotes
+    | escape_backslash
+    | ( ascii - escaped_string_characters )
+    | unicode
+    ;
+
+string_literal
+    = dqoute , { string_content } , dqoute
+    ;
+
+(*
+    Number literal (binary notation)
+*)
+binary
+    = "0"
+    | "1"
+    ;
+
+binary_underscore
+    = binary
+    | ""
+    ;
+
+binary_number
+    = binary , [ { binary_underscore } , binary ]
+    ;
+
+binary_number_literal
+    = "0b" , binary_number
+    ;
+
+(*
+    Number literal (octal notation)
+*)
+octal
+    = "0"
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    ;
+
+octal_underscore
+    = octal
+    | ""
+    ;
+
+octal_number
+    = octal , [ { octal_underscore } , octal ]
+    ;
+
+octal_number_literal
+    = "0o" , octal_number
+    ;
+
+(*
+    Number literal (decimal notation)
+*)
+decimal
+    = digit
+    ;
+
+decimal_underscore
+    = decimal
+    | ""
+    ;
+
+decimal_number
+    = decimal , [ { decimal_underscore } , decimal ]
+    ;
+
+decimal_number_literal
+    = "0d" , decimal_number
+    ;
+
+(*
+    Number literal (hexadecimal notation)
+*)
+hexadecimal
+    = digit
+    | "a"
+    | "b"
+    | "c"
+    | "d"
+    | "e"
+    | "f"
+    ;
+
+hexadecimal_underscore
+    = hexadecimal
+    | ""
+    ;
+
+hexadecimal_number
+    = hexadecimal , [ { hexadecimal_underscore } , hexadecimal ]
+    ;
+
+hexadecimal_number_literal
+    = "0x" , hexadecimal_number
+    ;
+
+(*
+    Number literal (scientific notation)
+*)
+scientific_underscore
+    = digit
+    | ""
+    ;
+
+scientific_number
+    = digit , [ { scientific_underscore } , digit ]
+    ;
+
+scientific_sign
+    = ""
+    | "-"
+    ;
+
+scientific_number_literal
+    = scientific_number , { "." , scientific_number } , { "e" , [ scientific_sign ] , scientific_number }
+    ;
