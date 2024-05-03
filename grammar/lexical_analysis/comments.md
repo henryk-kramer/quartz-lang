@@ -5,7 +5,7 @@
 ### Regex
 
 ```regexp
-\/\/.*(\r\n|\r|\n|)
+\/\/.*(\r\n|\n\r|\r|\n)
 ```
 
 ### Diagram
@@ -16,13 +16,22 @@ graph LR;
     B((S1))
     C(((S2)))
     D(((S3)))
+    E(((S4)))
+    F(((S5)))
+    G(((S6)))
     style C fill: green
     style D fill: green
+    style E fill: green
+    style F fill: green
+    style G fill: green
 
     A -- / --> B
     B -- / --> C
     C -- ELSE --> C
-    C -- NEWLINE --> D
+    C -- CR --> D
+    C -- LF --> E
+    D -- LF --> F
+    E -- CR --> G
 ```
 
 ### Examples

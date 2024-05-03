@@ -9,3 +9,7 @@
   - [Scientific notation](lexical_analysis/number_literals.md#scientific-notation)
 - [String literals](lexical_analysis/string_literal.md)
 - [Other literals](lexical_analysis/other_literals.md)
+  - [Boolean literals](lexical_analysis/other_literals.md#boolean-literals)
+  - [Symbol literal](lexical_analysis/other_literals.md#symbol-literal)
+- [Special characters](lexical_analysis/special_characters.md)
+- [Identifier](lexical_analysis/identifier.md)
