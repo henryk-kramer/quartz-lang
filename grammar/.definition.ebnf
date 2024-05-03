@@ -8,6 +8,11 @@ dquote
     = ""
     ;
 
+(* newline is used to refer to the control symbols \r or \n or \r\n *)
+newline
+    = ""
+    ;
+
 digit
     = "0"
     | "1"

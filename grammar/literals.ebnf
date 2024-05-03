@@ -50,7 +50,7 @@ binary
 
 binary_underscore
     = binary
-    | ""
+    | "_"
     ;
 
 binary_number
@@ -77,7 +77,7 @@ octal
 
 octal_underscore
     = octal
-    | ""
+    | "_"
     ;
 
 octal_number
@@ -97,7 +97,7 @@ decimal
 
 decimal_underscore
     = decimal
-    | ""
+    | "_"
     ;
 
 decimal_number
@@ -123,7 +123,7 @@ hexadecimal
 
 hexadecimal_underscore
     = hexadecimal
-    | ""
+    | "_"
     ;
 
 hexadecimal_number
@@ -139,7 +139,7 @@ hexadecimal_number_literal
 *)
 scientific_underscore
     = digit
-    | ""
+    | "_"
     ;
 
 scientific_number
@@ -147,7 +147,7 @@ scientific_number
     ;
 
 scientific_sign
-    = ""
+    = "+"
     | "-"
     ;
 
