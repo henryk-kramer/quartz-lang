@@ -97,7 +97,7 @@ unicode
 character_without_digit
     = uppercase
     | lowercase
-    | ""
+    | "_"
     | unicode
     ;
 
