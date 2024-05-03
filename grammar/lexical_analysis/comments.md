@@ -12,10 +12,10 @@
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B((S<sub>1</sub>))
-    C(((S<sub>2</sub>)))
-    D(((S<sub>3</sub>)))
+    A((S0))
+    B((S1))
+    C(((S2)))
+    D(((S3)))
     style C fill: green
     style D fill: green
 
@@ -45,11 +45,11 @@ graph LR;
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B((S<sub>1</sub>))
-    C((S<sub>2</sub>))
-    D((S<sub>3</sub>))
-    E(((S<sub>4</sub>)))
+    A((S0))
+    B((S1))
+    C((S2))
+    D((S3))
+    E(((S4)))
     style C fill: red
     style D fill: red
     style E fill: green

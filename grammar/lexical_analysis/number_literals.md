@@ -12,11 +12,11 @@
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B((S<sub>1</sub>))
-    C((S<sub>2</sub>))
-    D(((S<sub>3</sub>)))
-    E((S<sub>4</sub>))
+    A((S0))
+    B((S1))
+    C((S2))
+    D(((S3)))
+    E((S4))
     style C fill: red
     style D fill: green
     style E fill: red
@@ -51,11 +51,11 @@ graph LR;
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B((S<sub>1</sub>))
-    C((S<sub>2</sub>))
-    D(((S<sub>3</sub>)))
-    E((S<sub>4</sub>))
+    A((S0))
+    B((S1))
+    C((S2))
+    D(((S3)))
+    E((S4))
     style C fill: red
     style D fill: green
     style E fill: red
@@ -90,11 +90,11 @@ graph LR;
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B((S<sub>1</sub>))
-    C((S<sub>2</sub>))
-    D(((S<sub>3</sub>)))
-    E((S<sub>4</sub>))
+    A((S0))
+    B((S1))
+    C((S2))
+    D(((S3)))
+    E((S4))
     style C fill: red
     style D fill: green
     style E fill: red
@@ -129,11 +129,11 @@ graph LR;
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B((S<sub>1</sub>))
-    C((S<sub>2</sub>))
-    D(((S<sub>3</sub>)))
-    E((S<sub>4</sub>))
+    A((S0))
+    B((S1))
+    C((S2))
+    D(((S3)))
+    E((S4))
     style C fill: red
     style D fill: green
     style E fill: red
@@ -168,16 +168,16 @@ graph LR;
 
 ```mermaid
 graph LR;
-    A((S<sub>0</sub>))
-    B(((S<sub>1</sub>)))
-    C((S<sub>2</sub>))
-    D((S<sub>3</sub>))
-    E(((S<sub>4</sub>)))
-    F((S<sub>5</sub>))
-    G((S<sub>6</sub>))
-    H((S<sub>7</sub>))
-    I(((S<sub>8</sub>)))
-    J((S<sub>9</sub>))
+    A((S0))
+    B(((S1)))
+    C((S2))
+    D((S3))
+    E(((S4)))
+    F((S5))
+    G((S6))
+    H((S7))
+    I(((S8)))
+    J((S9))
     style B fill: green
     style C fill: red
     style D fill: red
