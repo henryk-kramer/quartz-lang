@@ -1,4 +1,6 @@
-# Lexical analysis
+# Grammar
+
+## Lexical analysis
 
 - [Single and multi line comments](lexical_analysis/comments.md)
 - [Number literals](lexical_analysis/number_literals.md)
@@ -13,3 +15,7 @@
   - [Symbol literal](lexical_analysis/other_literals.md#symbol-literal)
 - [Special characters](lexical_analysis/special_characters.md)
 - [Identifier](lexical_analysis/identifier.md)
+
+## Syntax analysis
+
+- [Base expressions](syntax_analysis/base_expressions.md)
