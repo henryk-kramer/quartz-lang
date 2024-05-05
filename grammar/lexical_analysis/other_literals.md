@@ -34,9 +34,7 @@ graph LR;
     style C fill: green
 
     A -- QUOTE --> B
-    B -- UNDERLINE --> C
-    B -- a..z,A..Z,0..9 --> C
-    B -- \x80.. --> C
+    B -- UNDERLINE<br>a..z,A..Z,0..9<br>\x80.. --> C
 ```
 
 ### Examples
