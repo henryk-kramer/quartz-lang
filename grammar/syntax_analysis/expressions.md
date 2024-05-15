@@ -4,7 +4,7 @@
 
 |Expression|Description|
 |---|---|
-|! `op`|Logical NOT on boolean|
+|!`op`|Logical NOT on boolean|
 |`op` && `op`|Logical AND on boolean (short-circuit evaluation)|
 |`op` \|\| `op`|Logical OR on boolean (short-circuit evaluation)|
 
@@ -41,29 +41,31 @@
 
 |Expression|Description|
 |---|---|
-|\[`elem`, ...\]|Returns a list with the given elements|
+|'\[`elem`, ...\]|Returns a list with the given elements|
 |`list`\[`num`\]|Returns the element at index `x`|
 |`list`\[`num`\]\[`num`\]|Returns the element of a nested list. Special case of `list`\[`x`\]|
-|\[`elem`, ... ~ `list`\]|Returns the `list` with the given elements prepended|
+|'\[`elem`, ... \| `list`\]|Returns the `list` with the given elements prepended|
 
-## Map expressions
+## Tuple expressions
 
-|Expression|Description|
-|---|---|
-|&\[`key` -> `val`, ...\]|Returns a map with the given key/value pairs|
-|`map`\[`x`\]|Returns the value at key `x`|
-|`map`\[`x`\]\[`y`\]|Returns the value of a nested map. Special case of `map`\[`x`\]|
-|&\[`key` -> `val`, ... ~ `map`\]|Returns the `map` with the given key/value pairs added/updated|
+`'()`
 
-## Struct (Tuple) expressions
+## Struct expressions
 
 |Expression|Description|
 |---|---|
-|&(`key`: `val`, ...)|Returns a struct with the given key/value pairs|
-|&(`elem`, ...)|Returns a struct with the index as key and the elements as values|
+|'{`key`: `val`, ...}|Returns a struct with the given key/value pairs|
 |`struct`.`x`|Returns the value at key `x`|
 |`struct`.`x`.`y`|Returns the value of a nested struct. Special case of `struct`.`x`|
-|&(`key`: `val`, ... ~ `struct`)|Returns the `struct` with the given key/value pairs added/updated|
+|'{`key`: `val`, ... \| `struct`}|Returns the `struct` with the given key/value pairs added/updated|
+
+## Named struct expressions
+
+`'struct{}`
+
+## Binary expressions
+
+`'<>`
 
 ## Any type expressions
 
