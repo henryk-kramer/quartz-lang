@@ -39,12 +39,45 @@
 
 ## List expressions
 
+### Definition
+
 |Expression|Description|
 |---|---|
 |'\[`elem`, ...\]|Returns a list with the given elements|
-|`list`\[`num`\]|Returns the element at index `x`|
-|`list`\[`num`\]\[`num`\]|Returns the element of a nested list. Special case of `list`\[`x`\]|
+|`list`\[`num`\]|Returns the element at index `num`|
+|`list`\[`num`\]\[`num`\]|Returns the element of a nested list. Special case of `list`\[`num`\]|
 |'\[`elem`, ... \| `list`\]|Returns the `list` with the given elements prepended|
+
+### Examples
+
+```quartz
+>>> '[1, 2, 3]
+'[1, 2, 3]
+```
+
+```quartz
+>>> let l = '[1, 2, 3]
+>>> l[2]
+3
+```
+
+```quartz
+>>> let l = '[1, 2, 3]
+>>> l[3]
+** (OutOfBoundsError) index 3 is out of bounds for list '[1, 2, 3]
+```
+
+```quartz
+>>> let l = '[[11, 12], [21, 22], [31, 32]]
+>>> l[1][1]
+22
+```
+
+```quartz
+>>> let l = '[4, 5]
+>>> '[1, 2, 3 | l]
+'[1, 2, 3, 4, 5]
+```
 
 ## Tuple expressions
 
