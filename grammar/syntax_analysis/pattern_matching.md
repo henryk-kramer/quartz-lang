@@ -11,8 +11,8 @@ if `1` can bind to `some_var` (meaning that `some_var` has the value of `1`).
 
 |Pattern|Description|
 |---|---|
-|'\[`elem`, ... \| `rest`\]|Matches the first x elements and binds a list only containing the unmatched elements to `rest`. Elements can be skipped by using a muted identifier `_`|
-|'\[`elem`, ...\]|Matches all the given elements. Elements can be skipped by using a muted identifier `_`|
+|'\[`elem`, ... \| `rest`\]|Matches the first x elements and binds a list only containing the unmatched elements to `rest`.|
+|'\[`elem`, ...\]|Exactly matches the given elements.|
 
 ### Examples
 
@@ -48,11 +48,17 @@ if `1` can bind to `some_var` (meaning that `some_var` has the value of `1`).
 
 ## Tuple pattern matching
 
-`'()`
+|Pattern|Description|
+|---|---|
+|'(`elem`, ... \| `rest`)|Matches the first x elements and binds a tuple only containing the unmatched elements to `rest`.|
+|'(`elem`, ...)|Exactly matches the given elements.|
 
 ## Struct pattern matching
 
-`'{}`
+|Pattern|Description|
+|---|---|
+|'{`key`: `value`, ... \| `rest`}|Matches the given key/value pairs and binds a struct only containing the unmatched key/value pairs to `rest`.|
+|'{`key`: `value`, ...}|Exactly matches the given key/value pairs.|
 
 ## Named pattern matching
 
