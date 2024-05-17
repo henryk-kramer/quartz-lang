@@ -4,7 +4,7 @@
 
 ### Definition
 
-`^` is used when you want to match to match and not bind to a variable.
+`^` is used when you want to match and not bind to a variable.
 
 ### Examples
 

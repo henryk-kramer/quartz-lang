@@ -43,10 +43,9 @@
 
 |Expression|Description|
 |---|---|
-|'\[`elem`, ...\]|Returns a list with the given elements|
-|`list`\[`num`\]|Returns the element at index `num`|
-|`list`\[`num`\]\[`num`\]|Returns the element of a nested list. Special case of `list`\[`num`\]|
-|'\[`elem`, ... \| `list`\]|Returns the `list` with the given elements prepended|
+|'\[`elem`, ...\]|Returns a list with the given elements.|
+|`list`\[`num`\]|Returns the element at index `num`.|
+|'\[`elem`, ... \| `list`\]|Returns the `list` with the given elements prepended.|
 
 ### Examples
 
@@ -81,20 +80,89 @@
 
 ## Tuple expressions
 
-`'()`
-
-## Struct expressions
+### Definition
 
 |Expression|Description|
 |---|---|
-|'{`key`: `val`, ...}|Returns a struct with the given key/value pairs|
-|`struct`.`x`|Returns the value at key `x`|
-|`struct`.`x`.`y`|Returns the value of a nested struct. Special case of `struct`.`x`|
-|'{`key`: `val`, ... \| `struct`}|Returns the `struct` with the given key/value pairs added/updated|
+|'(`elem`, ...)|Returns a tuple with the given elements.|
+|`list`.`num`|Returns the element at index `num`.|
+
+### Examples
+
+```quartz
+>>> '(1, 2, 3)
+'(1, 2, 3)
+```
+
+```quartz
+>>> let t = '(1, 2, 3)
+>>> t.2
+3
+```
+
+```quartz
+>>> let t = '(1, 2, 3)
+>>> t.3
+** Compilation error: (OutOfBoundsError) index 3 is out of bounds for tuple '(1, 2, 3)
+```
+
+```quartz
+>>> let t = '('(1, 2), 3, 4)
+>>> t.0.1
+2
+```
+
+## Struct expressions
+
+### Definition
+
+|Expression|Description|
+|---|---|
+|'{`key`: `val`, ...}|Returns a struct with the given key/value pairs.|
+|`struct`.`key`|Returns the value at `key`.|
+
+### Examples
+
+```quartz
+>>> let s = '{color: 'red}
+>>> s.color
+'red
+```
+
+```quartz
+>>> let s = '{color: 'red}
+>>> s.size
+** Compilation error: (FieldDoesNotExist) field 'size' does not exist in struct '{color: 'red}
+```
 
 ## Named struct expressions
 
-`'struct{}`
+### Definition
+
+|Expression|Description|
+|---|---|
+|'`name`{`key`: `val`, ...}|Returns a struct `name` with the given key/value pairs. Every key that does not have a default value needs to be specified.|
+|`struct`.`key`|Returns the value at `key`.|
+
+### Examples
+
+```quartz
+>>> let s = 'color{r: 255, g: 255, b: 255}
+>>> s.r
+255
+```
+
+```quartz
+>>> struct color = '{r: u8, g: u8, b: u8}
+>>> let s = 'color{r: 255}
+** (ConstructionError) all fields need to be initialized
+```
+
+```quartz
+>>> let s = 'color{r: 255, g: 255, b: 255}
+>>> s.size
+** Compilation error: (FieldDoesNotExist) field 'size' does not exist in struct 'color{r: 255, g: 255, b: 255}
+```
 
 ## Binary expressions
 
