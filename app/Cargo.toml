@@ -1,0 +1,4 @@
+[workspace]
+
+members = ["quartz-core", "quartz-repl"]
+resolver = "2"
