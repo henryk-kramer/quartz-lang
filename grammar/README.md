@@ -18,4 +18,5 @@
 
 ## Syntax analysis
 
-- [Base expressions](syntax_analysis/base_expressions.md)
+- [Expressions](syntax_analysis/expressions.md)
+- [Pattern matching](syntax_analysis/pattern_matching.md)
