@@ -20,3 +20,6 @@
 
 - [Expressions](syntax_analysis/expressions.md)
 - [Pattern matching](syntax_analysis/pattern_matching.md)
+- [Constants and variables](syntax_analysis/constants_variables.md)
+- [Functions](syntax_analysis/functions.md)
+- [Classes and structs](syntax_analysis/classes_structs_traits.md)
