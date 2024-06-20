@@ -1,4 +1,4 @@
-# Base expressions
+# Expressions
 
 ## Boolean expressions
 
