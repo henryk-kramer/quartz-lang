@@ -25,7 +25,7 @@ const const_name_2 = ...        // not exported
 
 ## Importing
 
-Everything from the global namespace is imported automatically. All other namespaces can be imported by using the `import` keyword. 
+Everything from the global namespace is imported automatically. All other namespaces can be imported by using the `import` keyword.
 
 ```quartz
 import foo::bar::foobar
