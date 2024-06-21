@@ -23,3 +23,5 @@
 - [Constants and variables](syntax_analysis/constants_variables.md)
 - [Functions](syntax_analysis/functions.md)
 - [Classes and structs](syntax_analysis/classes_structs_traits.md)
+- [Control flow](syntax_analysis/control_flow.md)
+- [Namespaces](syntax_analysis/namespaces.md)
