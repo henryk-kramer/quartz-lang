@@ -22,7 +22,7 @@ let ex = 'Example{}
 Example::do_something(ex)
 ```
 
-## Class
+## Classes
 
 Every class member is private by default which means it cannot be accessed outside of the class context.
 
@@ -97,11 +97,11 @@ trait TraitName {
 To implement a trait for a struct or class the `impl` keyword can be used. Implementing multiple traits can be achieved by using `impl` multiple times.
 
 ```quartz
-impl TraitName for ClassName {
+impl ClassName : TraitName1 {
     fn trait_func(self, ...) -> ... = ...
 }
 
-impl TraitName2 for ClassName {
+impl ClassName : TraitName2 {
     fn trait_func(self, ...) -> ... = ...
 }
 ```
@@ -117,7 +117,7 @@ class ClassName {
     let value: u8
 }
 
-impl TraitName for ClassName {
+impl ClassName : TraitName {
     fn get_value(self) -> u8 = self.value
 }
 
@@ -136,7 +136,7 @@ class Cat {
     pub fn new() -> Cat = 'Cat{}
 }
 
-impl Animal for Cat {
+impl Cat : Animal {
     fn make_sound(self) -> str = "Miau"
 }
 
@@ -144,7 +144,7 @@ class Dog {
     pub fn new() -> Dog = 'Dog{}
 }
 
-impl Animal for Dog {
+impl Dog : Animal {
     fn make_sound(self) -> str = "Wuff"
 }
 
