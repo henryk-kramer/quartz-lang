@@ -1,6 +1,6 @@
 # Number literals
 
-## Boolean notation
+## Binary notation
 
 ### Regex
 
