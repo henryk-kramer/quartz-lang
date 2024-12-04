@@ -1,5 +1,0 @@
-package quartzc
-
-func Run() {
-
-}
