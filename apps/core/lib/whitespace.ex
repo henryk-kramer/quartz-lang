@@ -3,12 +3,13 @@ defmodule QuartzLang.Core.Whitespace do
 
   def parse(stream) do
     fsm =
+      Fsm.init()
+      |> Fsm.finals([:whitespace])
+      |> Fsm.nomatches([:none])
+      |> Fsm.from(nil)          |> Fsm.with("\t\s") |> Fsm.to(:whitespace)
+      |> Fsm.from(:whitespace)  |> Fsm.with("\t\s") |> Fsm.to(:whitespace)
+      |> Fsm.build()
 
-
-    fsm =
-      Fsm.finals([:whitespace]).nomatches([:none])
-      |> Fsm.from(:none, :whitespace).with("\t\s").to([:whitespace])
-
-    Fsm.parse(stream)
+    Fsm.parse(fsm, stream)
   end
 end
