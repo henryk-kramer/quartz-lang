@@ -7,17 +7,14 @@ defmodule QuartzLang.Core.String do
       |> Fsm.finals([:closed])
       |> Fsm.nomatches([])
 
-      |> Fsm.from(nil)      |> Fsm.with("\"")   |> Fsm.to(:opened)
-
-      |> Fsm.from(:opened)  |> Fsm.with("\\")   |> Fsm.to(:escaped)
-      |> Fsm.from(:opened)  |> Fsm.with("\"")   |> Fsm.to(:closed)
-      |> Fsm.from(:opened)  |> Fsm.any()        |> Fsm.to(:content)
-
-      |> Fsm.from(:content) |> Fsm.with("\\")   |> Fsm.to(:escaped)
-      |> Fsm.from(:content) |> Fsm.with("\"")   |> Fsm.to(:closed)
-      |> Fsm.from(:content) |> Fsm.any()        |> Fsm.to(:content)
-
-      |> Fsm.from(:escaped) |> Fsm.any()        |> Fsm.to(:content)
+      |> Fsm.with(nil,        "\"",   :opened)
+      |> Fsm.with(:opened,    "\\",   :escaped)
+      |> Fsm.with(:opened,    "\"",   :closed)
+      |> Fsm.any( :opened,            :content)
+      |> Fsm.with(:content,   "\\",   :escaped)
+      |> Fsm.with(:content,   "\"",   :closed)
+      |> Fsm.any( :content,           :content)
+      |> Fsm.any( :escaped,           :content)
 
       |> Fsm.build()
 
