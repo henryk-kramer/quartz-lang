@@ -17,40 +17,36 @@ type lexer struct {
 func Run(text string) []Token {
 	l := newLexer(text)
 
+	matchBinNum := func(ch rune) bool {
+		return ch >= '0' && ch <= '1'
+	}
+
+	matchOctNum := func(ch rune) bool {
+		return ch >= '0' && ch <= '7'
+	}
+
+	matchDecNum := func(ch rune) bool {
+		return ch >= '0' && ch <= '9'
+	}
+
+	matchHexNum := func(ch rune) bool {
+		return (ch >= '0' && ch <= '9') ||
+			(ch >= 'a' && ch <= 'f') ||
+			(ch >= 'A' && ch <= 'F')
+	}
+
 	for !l.eof() {
 		var _ = l.parseChars("\t", TAB) ||
 			l.parseChars("\n", NEWLINE) ||
 			l.parseWhitespace() ||
 			l.parseSingleLineComment() ||
 			l.parseMultiLineComment() ||
-			l.parseChars("namespace", KEYWORD_TYPE) ||
-			l.parseChars("import", KEYWORD_TYPE) ||
-			l.parseChars("as", KEYWORD_TYPE) ||
-			l.parseChars("from", KEYWORD_TYPE) ||
-			l.parseChars("let!", KEYWORD_LET_EXCLAMATION) ||
-			l.parseChars("let", KEYWORD_LET) ||
-			l.parseChars("const", KEYWORD_CONST) ||
-			l.parseChars("pub", KEYWORD_PUB) ||
-			l.parseChars("fn", KEYWORD_FN) ||
-			l.parseChars("struct", KEYWORD_STRUCT) ||
-			l.parseChars("trait", KEYWORD_TRAIT) ||
-			l.parseChars("impl", KEYWORD_IMPL) ||
-			l.parseChars("self", KEYWORD_SELF) ||
-			l.parseChars("nil", KEYWORD_NIL) ||
-			l.parseChars("if", KEYWORD_IF) ||
-			l.parseChars("cond", KEYWORD_COND) ||
-			l.parseChars("case", KEYWORD_CASE) ||
-			l.parseChars("else", KEYWORD_ELSE) ||
-			l.parseChars("return", KEYWORD_RETURN) ||
-			l.parseChars("not", BINARY_NOT) ||
-			l.parseChars("and", BINARY_AND) ||
-			l.parseChars("or", BINARY_OR) ||
-			l.parseChars("xor", BINARY_XOR) ||
-			l.parseChars("shl", BINARY_SHL) ||
-			l.parseChars("shr", BINARY_SHR) ||
-			l.parseChars("ashr", BINARY_ASHR) ||
-			l.parseChars("cshl", BINARY_CSHL) ||
-			l.parseChars("cshr", BINARY_CSHR) ||
+			l.parseStringLiteral() ||
+			l.parseIdentifierOrKeyword() ||
+			l.parseXaryNumLiteral('b', matchBinNum, BIN_NUM_LITERAL, BIN_NUM_LITERAL_ERROR) ||
+			l.parseXaryNumLiteral('o', matchOctNum, OCT_NUM_LITERAL, OCT_NUM_LITERAL_ERROR) ||
+			l.parseXaryNumLiteral('d', matchDecNum, DEC_NUM_LITERAL, DEC_NUM_LITERAL_ERROR) ||
+			l.parseXaryNumLiteral('x', matchHexNum, HEX_NUM_LITERAL, HEX_NUM_LITERAL_ERROR) ||
 			l.parseChars("<=", LESS_THAN_OR_EQUALS) ||
 			l.parseChars("<", LESS_THAN) ||
 			l.parseChars(">=", GREATER_THAN_OR_EQUALS) ||
@@ -63,6 +59,7 @@ func Run(text string) []Token {
 			l.parseChars("||", IF_NIL) ||
 			l.parseChars("::", FUNCTION_REFERENCE) ||
 			l.parseChars("=", BINDING) ||
+			l.parseChars("_", MUTED) ||
 			l.parseChars("'", TICK) ||
 			l.parseChars("^", CIRCUMFLEX) ||
 			l.parseChars("|", PIPE) ||
@@ -193,6 +190,10 @@ func (l *lexer) rollback() {
 	l.currPos = l.startPos
 }
 
+func (l *lexer) literal() string {
+	return string(l.runes[l.startPos.Idx:l.currPos.Idx])
+}
+
 /* Parse methods*/
 
 func (l *lexer) parseChars(chars string, tokenType TokenType) bool {
@@ -274,6 +275,284 @@ func (l *lexer) parseMultiLineComment() bool {
 	l.advance()
 
 	l.commit(MULTI_LINE_COMMENT, false)
+	return true
+}
+
+func (l *lexer) parseStringLiteral() bool {
+	if l.peek() != '"' {
+		return false
+	}
+
+	l.advance()
+
+	var prevCh rune
+	l.advanceWhile(func(ch rune) bool {
+		if prevCh == '\\' {
+			prevCh = 0
+			return true
+		}
+
+		prevCh = ch
+		return ch != '"'
+	})
+
+	if l.eof() {
+		l.commit(STRING_LITERAL_ERROR, true)
+		return true
+	}
+
+	l.advance()
+
+	l.commit(STRING_LITERAL, false)
+
+	return true
+}
+
+func (l *lexer) parseIdentifierOrKeyword() bool {
+	matchUnderscore := func(ch rune) bool {
+		return ch == '_'
+	}
+
+	matchLowerAtoZ := func(ch rune) bool {
+		return ch >= 'a' && ch <= 'z'
+	}
+
+	matchUpperAtoZ := func(ch rune) bool {
+		return ch >= 'A' && ch <= 'Z'
+	}
+
+	match0to9 := func(ch rune) bool {
+		return ch >= '0' && ch <= '9'
+	}
+
+	firstCh := l.peek()
+
+	if !(matchUnderscore(firstCh) || matchLowerAtoZ(firstCh) || matchUpperAtoZ(firstCh)) {
+		return false
+	}
+
+	l.advanceWhile(func(ch rune) bool {
+		return (matchUnderscore(ch) ||
+			matchLowerAtoZ(ch) ||
+			matchUpperAtoZ(ch) ||
+			match0to9(ch))
+	})
+
+	if matchUnderscore(firstCh) {
+		l.commit(MUTED_IDENTIFIER, false)
+		return true
+	}
+
+	switch l.literal() {
+	case "namespace":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "import":
+		l.commit(KEYWORD_IMPORT, false)
+	case "from":
+		l.commit(KEYWORD_FROM, false)
+	case "as":
+		l.commit(KEYWORD_AS, false)
+	case "let!":
+		l.commit(KEYWORD_LET_EXCLAMATION, false)
+	case "let":
+		l.commit(KEYWORD_LET, false)
+	case "const":
+		l.commit(KEYWORD_CONST, false)
+	case "pub":
+		l.commit(KEYWORD_PUB, false)
+	case "fn":
+		l.commit(KEYWORD_FN, false)
+	case "struct":
+		l.commit(KEYWORD_STRUCT, false)
+	case "trait":
+		l.commit(KEYWORD_TRAIT, false)
+	case "impl":
+		l.commit(KEYWORD_IMPL, false)
+	case "self":
+		l.commit(KEYWORD_SELF, false)
+	case "nil":
+		l.commit(KEYWORD_NIL, false)
+	case "if":
+		l.commit(KEYWORD_IF, false)
+	case "cond":
+		l.commit(KEYWORD_COND, false)
+	case "case":
+		l.commit(KEYWORD_CASE, false)
+	case "else":
+		l.commit(KEYWORD_ELSE, false)
+	case "return":
+		l.commit(KEYWORD_RETURN, false)
+	case "not":
+		l.commit(KEYWORD_NOT, false)
+	case "and":
+		l.commit(KEYWORD_AND, false)
+	case "or":
+		l.commit(KEYWORD_OR, false)
+	case "xor":
+		l.commit(KEYWORD_XOR, false)
+	case "shl":
+		l.commit(KEYWORD_SHL, false)
+	case "shr":
+		l.commit(KEYWORD_SHR, false)
+	case "ashr":
+		l.commit(KEYWORD_ASHR, false)
+	case "cshl":
+		l.commit(KEYWORD_CSHL, false)
+	case "cshr":
+		l.commit(KEYWORD_CSHR, false)
+	case "true":
+		l.commit(KEYWORD_TRUE, false)
+	case "false":
+		l.commit(KEYWORD_FALSE, false)
+	case "bool":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "u8":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "u16":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "u32":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "u64":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "i8":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "i16":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "i32":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "i64":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "f32":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "f64":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "num":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "sym":
+		l.commit(KEYWORD_NAMESPACE, false)
+	case "bin":
+		l.commit(KEYWORD_NAMESPACE, false)
+	default:
+		l.commit(IDENTIFIER, false)
+	}
+
+	return true
+}
+
+func (l *lexer) parseXaryNumLiteral(
+	identifier rune,
+	match func(rune) bool,
+	tokenType TokenType,
+	errTokenType TokenType,
+) bool {
+	errMatch := func(ch rune) bool {
+		return ch == '_' ||
+			(ch >= 'a' && ch <= 'z') ||
+			(ch >= 'A' && ch <= 'Z') ||
+			(ch >= '0' && ch <= '9')
+	}
+
+	if l.peek() != '0' {
+		return false
+	}
+
+	l.advance()
+
+	if l.peek() != identifier {
+		l.rollback()
+		return false
+	}
+
+	l.advance()
+
+	var foundData bool
+	l.advanceWhile(func(ch rune) bool {
+		if match(ch) {
+			foundData = true
+			return true
+		}
+		return ch == '_'
+	})
+
+	if errMatch(l.peek()) {
+		l.advanceWhile(errMatch)
+		l.commit(errTokenType, true)
+		return true
+	}
+
+	if !foundData {
+		l.commit(errTokenType, true)
+		return true
+	}
+
+	l.commit(tokenType, false)
+	return true
+}
+
+func (l *lexer) parseNormalNumLiteral() bool {
+	errMatch := func(ch rune) bool {
+		return ch == '_' ||
+			ch == '.' ||
+			(ch >= 'a' && ch <= 'z') ||
+			(ch >= 'A' && ch <= 'Z') ||
+			(ch >= '0' && ch <= '9')
+	}
+
+	match0to9 := func(ch rune) bool {
+		return ch >= '0' && ch <= '9'
+	}
+
+	if !match0to9(l.peek()) {
+		return false
+	}
+
+	l.advanceWhile(match0to9)
+
+	// If next character is no error character
+	if !errMatch(l.peek()) {
+		l.commit(NORMAL_NUM_LITERAL, false)
+		return true
+	}
+
+	ch := l.peek()
+
+	// Error character (except . and e) not allowed here
+	if ch != '.' && ch != 'e' {
+		l.advanceWhile(errMatch)
+		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+		return true
+	}
+
+	// Handle decimal
+	if l.peek() == '.' {
+		l.advance()
+
+		// Expected number after dot
+		if !match0to9(l.peek()) {
+			l.advanceWhile(errMatch)
+			l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+			return true
+		}
+
+		l.advanceWhile(match0to9)
+
+		// If
+		ch = l.peek()
+		if ch != 'e' && errMatch(ch) {
+			l.advanceWhile(errMatch)
+			l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+			return true
+		}
+	}
+
+	// TODO Exponent
+
+	// Handle exponent
+	if l.peek() == 'e' {
+		l.advance()
+
+	}
+
 	return true
 }
 
