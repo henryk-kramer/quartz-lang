@@ -6,8 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/henryk-kramer/quartz-lang/internal/app/qrepl/cli"
+	"github.com/henryk-kramer/quartz-lang/internal/pkg/cli"
 	"github.com/henryk-kramer/quartz-lang/internal/pkg/lexer"
+	"github.com/henryk-kramer/quartz-lang/internal/pkg/parser"
 )
 
 func Run(
@@ -24,12 +25,25 @@ func Run(
 			continue
 		}
 
-		for _, token := range lexer.Run(input, "CLI") {
-			if token.HasError {
-				console.WriteError("%s", token)
-			} else {
-				console.WriteDebug("%s", token)
+		tokens := lexer.Run(input, "CLI")
+
+		if printLexerOutput {
+			console.WriteDebug("---- Lexer Tokens ----")
+			for _, token := range tokens {
+				if token.HasError {
+					console.WriteError("%s", token)
+				} else {
+					console.WriteDebug("%s", token)
+				}
 			}
+		}
+
+		program, errors := parser.Run(tokens)
+
+		if printParserOutput {
+			console.WriteDebug("---- Parser AST ----")
+			console.WriteDebug("%s", program)
+			console.WriteError("%s", errors)
 		}
 	}
 }

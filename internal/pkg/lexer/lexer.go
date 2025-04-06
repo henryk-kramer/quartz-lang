@@ -58,7 +58,7 @@ func Run(text string, filename string) []Token {
 			l.parseChars("??", IF_NIL) ||
 			l.parseChars("&&", IF_NIL) ||
 			l.parseChars("||", IF_NIL) ||
-			l.parseChars("::", FUNCTION_REFERENCE) ||
+			l.parseChars("::", DOUBLE_SEMICOLON) ||
 			l.parseChars("=", BINDING) ||
 			l.parseChars("_", MUTED) ||
 			l.parseChars("'", TICK) ||

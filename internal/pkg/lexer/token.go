@@ -20,7 +20,7 @@ const (
 	OPENED_BRACKET     TokenType = "Opened bracket"
 	CLOSED_BRACKET     TokenType = "Closed bracket"
 
-	FUNCTION_REFERENCE     TokenType = "Function reference"
+	DOUBLE_SEMICOLON       TokenType = "Double semicolon"
 	PLUS_SIGN              TokenType = "Plus sign"
 	MINUS_SIGN             TokenType = "Minus sign"
 	STAR_SIGN              TokenType = "Star sign"
@@ -109,6 +109,7 @@ const (
 	NORMAL_NUM_LITERAL_ERROR TokenType = "Normal num literal error"
 
 	UNKNOWN TokenType = "Unknown"
+	EOF     TokenType = "EOF"
 )
 
 type Token struct {

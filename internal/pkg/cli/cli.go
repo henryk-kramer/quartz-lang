@@ -42,7 +42,7 @@ func (cli *Cli) Read() string {
 }
 
 func (cli *Cli) Write(text string, a ...any) {
-	fmt.Printf(text, a...)
+	fmt.Printf(text+"\n", a...)
 }
 
 func (cli *Cli) WriteSuccess(text string, a ...any) {
