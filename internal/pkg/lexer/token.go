@@ -114,17 +114,24 @@ const (
 type Token struct {
 	Type     TokenType
 	HasError bool
+	ErrorMsg string
 	Literal  string
 	Pos      util.Position
 }
 
 func (token Token) String() string {
+	errorMsg := ""
+	if token.HasError {
+		errorMsg = fmt.Sprintf("(%s) ", token.ErrorMsg)
+	}
+
 	return fmt.Sprintf(
-		"{ (i%d r%d c%d) %s: %q } ",
+		"{ (i%d r%d c%d) %s: %q %s} ",
 		token.Pos.Idx,
 		token.Pos.Row,
 		token.Pos.Col,
 		token.Type,
 		token.Literal,
+		errorMsg,
 	)
 }

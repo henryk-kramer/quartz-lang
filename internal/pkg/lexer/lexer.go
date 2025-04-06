@@ -171,13 +171,30 @@ func (l *lexer) advanceWhile(match func(rune) bool) {
 	}
 }
 
-func (l *lexer) commit(tokenType TokenType, hasError bool) {
+func (l *lexer) commit(tokenType TokenType) {
 	pos := l.startPos
 	pos.Len = l.currPos.Idx - l.startPos.Idx
 
 	token := Token{
 		Type:     tokenType,
-		HasError: hasError,
+		HasError: false,
+		Literal:  string(l.runes[l.startPos.Idx:l.currPos.Idx]),
+		Pos:      pos,
+	}
+
+	l.tokens = append(l.tokens, token)
+
+	l.startPos = l.currPos
+}
+
+func (l *lexer) commitErr(tokenType TokenType, errorMsg string) {
+	pos := l.startPos
+	pos.Len = l.currPos.Idx - l.startPos.Idx
+
+	token := Token{
+		Type:     tokenType,
+		HasError: true,
+		ErrorMsg: errorMsg,
 		Literal:  string(l.runes[l.startPos.Idx:l.currPos.Idx]),
 		Pos:      pos,
 	}
@@ -207,7 +224,7 @@ func (l *lexer) parseChars(chars string, tokenType TokenType) bool {
 		l.advance()
 	}
 
-	l.commit(tokenType, false)
+	l.commit(tokenType)
 	return true
 }
 
@@ -222,7 +239,7 @@ func (l *lexer) parseWhitespace() bool {
 		return unicode.IsSpace(ch)
 	})
 
-	l.commit(WHITESPACE, false)
+	l.commit(WHITESPACE)
 	return true
 }
 
@@ -242,7 +259,7 @@ func (l *lexer) parseSingleLineComment() bool {
 		return ch != '\n'
 	})
 
-	l.commit(SINGLE_LINE_COMMENT, false)
+	l.commit(SINGLE_LINE_COMMENT)
 	return true
 }
 
@@ -269,13 +286,13 @@ func (l *lexer) parseMultiLineComment() bool {
 	})
 
 	if l.eof() {
-		l.commit(MULTI_LINE_COMMENT_ERROR, true)
+		l.commitErr(MULTI_LINE_COMMENT_ERROR, "Multi line comment not closed")
 		return true
 	}
 
 	l.advance()
 
-	l.commit(MULTI_LINE_COMMENT, false)
+	l.commit(MULTI_LINE_COMMENT)
 	return true
 }
 
@@ -298,13 +315,13 @@ func (l *lexer) parseStringLiteral() bool {
 	})
 
 	if l.eof() {
-		l.commit(STRING_LITERAL_ERROR, true)
+		l.commitErr(STRING_LITERAL_ERROR, "String literal not closed")
 		return true
 	}
 
 	l.advance()
 
-	l.commit(STRING_LITERAL, false)
+	l.commit(STRING_LITERAL)
 
 	return true
 }
@@ -340,101 +357,101 @@ func (l *lexer) parseIdentifierOrKeyword() bool {
 	})
 
 	if matchUnderscore(firstCh) {
-		l.commit(MUTED_IDENTIFIER, false)
+		l.commit(MUTED_IDENTIFIER)
 		return true
 	}
 
 	switch l.literal() {
 	case "namespace":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "import":
-		l.commit(KEYWORD_IMPORT, false)
+		l.commit(KEYWORD_IMPORT)
 	case "from":
-		l.commit(KEYWORD_FROM, false)
+		l.commit(KEYWORD_FROM)
 	case "as":
-		l.commit(KEYWORD_AS, false)
+		l.commit(KEYWORD_AS)
 	case "let!":
-		l.commit(KEYWORD_LET_EXCLAMATION, false)
+		l.commit(KEYWORD_LET_EXCLAMATION)
 	case "let":
-		l.commit(KEYWORD_LET, false)
+		l.commit(KEYWORD_LET)
 	case "const":
-		l.commit(KEYWORD_CONST, false)
+		l.commit(KEYWORD_CONST)
 	case "pub":
-		l.commit(KEYWORD_PUB, false)
+		l.commit(KEYWORD_PUB)
 	case "fn":
-		l.commit(KEYWORD_FN, false)
+		l.commit(KEYWORD_FN)
 	case "struct":
-		l.commit(KEYWORD_STRUCT, false)
+		l.commit(KEYWORD_STRUCT)
 	case "trait":
-		l.commit(KEYWORD_TRAIT, false)
+		l.commit(KEYWORD_TRAIT)
 	case "impl":
-		l.commit(KEYWORD_IMPL, false)
+		l.commit(KEYWORD_IMPL)
 	case "self":
-		l.commit(KEYWORD_SELF, false)
+		l.commit(KEYWORD_SELF)
 	case "nil":
-		l.commit(KEYWORD_NIL, false)
+		l.commit(KEYWORD_NIL)
 	case "if":
-		l.commit(KEYWORD_IF, false)
+		l.commit(KEYWORD_IF)
 	case "cond":
-		l.commit(KEYWORD_COND, false)
+		l.commit(KEYWORD_COND)
 	case "case":
-		l.commit(KEYWORD_CASE, false)
+		l.commit(KEYWORD_CASE)
 	case "else":
-		l.commit(KEYWORD_ELSE, false)
+		l.commit(KEYWORD_ELSE)
 	case "return":
-		l.commit(KEYWORD_RETURN, false)
+		l.commit(KEYWORD_RETURN)
 	case "not":
-		l.commit(KEYWORD_NOT, false)
+		l.commit(KEYWORD_NOT)
 	case "and":
-		l.commit(KEYWORD_AND, false)
+		l.commit(KEYWORD_AND)
 	case "or":
-		l.commit(KEYWORD_OR, false)
+		l.commit(KEYWORD_OR)
 	case "xor":
-		l.commit(KEYWORD_XOR, false)
+		l.commit(KEYWORD_XOR)
 	case "shl":
-		l.commit(KEYWORD_SHL, false)
+		l.commit(KEYWORD_SHL)
 	case "shr":
-		l.commit(KEYWORD_SHR, false)
+		l.commit(KEYWORD_SHR)
 	case "ashr":
-		l.commit(KEYWORD_ASHR, false)
+		l.commit(KEYWORD_ASHR)
 	case "cshl":
-		l.commit(KEYWORD_CSHL, false)
+		l.commit(KEYWORD_CSHL)
 	case "cshr":
-		l.commit(KEYWORD_CSHR, false)
+		l.commit(KEYWORD_CSHR)
 	case "true":
-		l.commit(KEYWORD_TRUE, false)
+		l.commit(KEYWORD_TRUE)
 	case "false":
-		l.commit(KEYWORD_FALSE, false)
+		l.commit(KEYWORD_FALSE)
 	case "bool":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "u8":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "u16":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "u32":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "u64":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "i8":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "i16":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "i32":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "i64":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "f32":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "f64":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "num":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "sym":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	case "bin":
-		l.commit(KEYWORD_NAMESPACE, false)
+		l.commit(KEYWORD_NAMESPACE)
 	default:
-		l.commit(IDENTIFIER, false)
+		l.commit(IDENTIFIER)
 	}
 
 	return true
@@ -477,16 +494,16 @@ func (l *lexer) parseXaryNumLiteral(
 
 	if errMatch(l.peek()) {
 		l.advanceWhile(errMatch)
-		l.commit(errTokenType, true)
+		l.commitErr(errTokenType, "Xary number literals can't be followed by a-z, A-Z, 0-9 or _")
 		return true
 	}
 
 	if !foundData {
-		l.commit(errTokenType, true)
+		l.commitErr(errTokenType, "Xary number literal defined without data")
 		return true
 	}
 
-	l.commit(tokenType, false)
+	l.commit(tokenType)
 	return true
 }
 
@@ -512,14 +529,14 @@ func (l *lexer) parseNormalNumLiteral() bool {
 	l.advanceWhile(match0to9)
 
 	if !errMatch(l.peek()) {
-		l.commit(NORMAL_NUM_LITERAL, false)
+		l.commit(NORMAL_NUM_LITERAL)
 		return true
 	}
 
 	ch := l.peek()
 	if ch != '.' && ch != 'e' {
 		l.advanceWhile(errMatch)
-		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+		l.commitErr(NORMAL_NUM_LITERAL_ERROR, "Number literals cannot contain a-z, A-Z, 0-9, _ or .")
 		return true
 	}
 
@@ -530,7 +547,7 @@ func (l *lexer) parseNormalNumLiteral() bool {
 
 		if !match0to9(l.peek()) {
 			l.advanceWhile(errMatch)
-			l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+			l.commitErr(NORMAL_NUM_LITERAL_ERROR, "No numbers specified after decimal point")
 			return true
 		}
 
@@ -540,10 +557,10 @@ func (l *lexer) parseNormalNumLiteral() bool {
 		if ch != 'e' {
 			if errMatch(ch) {
 				l.advanceWhile(errMatch)
-				l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+				l.commitErr(NORMAL_NUM_LITERAL_ERROR, "Number literals cannot contain a-z, A-Z, 0-9, _ or .")
 				return true
 			} else {
-				l.commit(NORMAL_NUM_LITERAL, false)
+				l.commit(NORMAL_NUM_LITERAL)
 				return true
 			}
 		}
@@ -560,7 +577,7 @@ func (l *lexer) parseNormalNumLiteral() bool {
 
 	if !match0to9(l.peek()) {
 		l.advanceWhile(errMatch)
-		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+		l.commitErr(NORMAL_NUM_LITERAL_ERROR, "No numbers specified after exponent sign")
 		return true
 	}
 
@@ -568,18 +585,18 @@ func (l *lexer) parseNormalNumLiteral() bool {
 
 	if errMatch(l.peek()) {
 		l.advanceWhile(errMatch)
-		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+		l.commitErr(NORMAL_NUM_LITERAL_ERROR, "Number literals cannot contain a-z, A-Z, 0-9, _ or .")
 		return true
 	}
 
-	l.commit(NORMAL_NUM_LITERAL, false)
+	l.commit(NORMAL_NUM_LITERAL)
 	return true
 }
 
 func (l *lexer) parseUnknown() bool {
 	l.advance()
 
-	l.commit(UNKNOWN, true)
+	l.commitErr(UNKNOWN, "The specified characters are unknown")
 
 	l.startPos = l.currPos
 
