@@ -47,6 +47,7 @@ func Run(text string) []Token {
 			l.parseXaryNumLiteral('o', matchOctNum, OCT_NUM_LITERAL, OCT_NUM_LITERAL_ERROR) ||
 			l.parseXaryNumLiteral('d', matchDecNum, DEC_NUM_LITERAL, DEC_NUM_LITERAL_ERROR) ||
 			l.parseXaryNumLiteral('x', matchHexNum, HEX_NUM_LITERAL, HEX_NUM_LITERAL_ERROR) ||
+			l.parseNormalNumLiteral() ||
 			l.parseChars("<=", LESS_THAN_OR_EQUALS) ||
 			l.parseChars("<", LESS_THAN) ||
 			l.parseChars(">=", GREATER_THAN_OR_EQUALS) ||
@@ -502,32 +503,31 @@ func (l *lexer) parseNormalNumLiteral() bool {
 		return ch >= '0' && ch <= '9'
 	}
 
+	/* Handle Integer part */
+
 	if !match0to9(l.peek()) {
 		return false
 	}
 
 	l.advanceWhile(match0to9)
 
-	// If next character is no error character
 	if !errMatch(l.peek()) {
 		l.commit(NORMAL_NUM_LITERAL, false)
 		return true
 	}
 
 	ch := l.peek()
-
-	// Error character (except . and e) not allowed here
 	if ch != '.' && ch != 'e' {
 		l.advanceWhile(errMatch)
 		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
 		return true
 	}
 
-	// Handle decimal
+	/* Handle decimal part */
+
 	if l.peek() == '.' {
 		l.advance()
 
-		// Expected number after dot
 		if !match0to9(l.peek()) {
 			l.advanceWhile(errMatch)
 			l.commit(NORMAL_NUM_LITERAL_ERROR, true)
@@ -536,23 +536,43 @@ func (l *lexer) parseNormalNumLiteral() bool {
 
 		l.advanceWhile(match0to9)
 
-		// If
 		ch = l.peek()
-		if ch != 'e' && errMatch(ch) {
-			l.advanceWhile(errMatch)
-			l.commit(NORMAL_NUM_LITERAL_ERROR, true)
-			return true
+		if ch != 'e' {
+			if errMatch(ch) {
+				l.advanceWhile(errMatch)
+				l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+				return true
+			} else {
+				l.commit(NORMAL_NUM_LITERAL, false)
+				return true
+			}
 		}
 	}
 
-	// TODO Exponent
+	/* Handle exponent part */
 
-	// Handle exponent
-	if l.peek() == 'e' {
+	l.advance()
+
+	ch = l.peek()
+	if ch == '+' || ch == '-' {
 		l.advance()
-
 	}
 
+	if !match0to9(l.peek()) {
+		l.advanceWhile(errMatch)
+		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+		return true
+	}
+
+	l.advanceWhile(match0to9)
+
+	if errMatch(l.peek()) {
+		l.advanceWhile(errMatch)
+		l.commit(NORMAL_NUM_LITERAL_ERROR, true)
+		return true
+	}
+
+	l.commit(NORMAL_NUM_LITERAL, false)
 	return true
 }
 
