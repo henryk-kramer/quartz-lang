@@ -115,6 +115,7 @@ func TestParseString(t *testing.T) {
 		{"\"\"", []lexer.Token{{Type: lexer.STRING_LITERAL, Literal: "\"\"", HasError: false, Pos: util.Position{Len: 2}}}},
 		{"\"test\"", []lexer.Token{{Type: lexer.STRING_LITERAL, Literal: "\"test\"", HasError: false, Pos: util.Position{Len: 6}}}},
 		{"\"\n\"", []lexer.Token{{Type: lexer.STRING_LITERAL, Literal: "\"\n\"", HasError: false, Pos: util.Position{Len: 3}}}},
+		{"\"\\\"\"", []lexer.Token{{Type: lexer.STRING_LITERAL, Literal: "\"\\\"\"", HasError: false, Pos: util.Position{Len: 4}}}},
 
 		// Wrong
 		{"\"", []lexer.Token{{Type: lexer.STRING_LITERAL_ERROR, Literal: "\"", HasError: true, Pos: util.Position{Len: 1}}}},
