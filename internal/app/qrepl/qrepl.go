@@ -24,7 +24,7 @@ func Run(
 			continue
 		}
 
-		for _, token := range lexer.Run(input) {
+		for _, token := range lexer.Run(input, "CLI") {
 			if token.HasError {
 				console.WriteError("%s", token)
 			} else {

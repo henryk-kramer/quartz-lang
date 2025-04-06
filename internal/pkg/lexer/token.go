@@ -126,10 +126,11 @@ func (token Token) String() string {
 	}
 
 	return fmt.Sprintf(
-		"{ (i%d r%d c%d) %s: %q %s} ",
+		"{ (i%d r%d c%d l%d) %s: %q %s} ",
 		token.Pos.Idx,
 		token.Pos.Row,
 		token.Pos.Col,
+		token.Pos.Len,
 		token.Type,
 		token.Literal,
 		errorMsg,

@@ -14,8 +14,8 @@ type lexer struct {
 	currPos  util.Position
 }
 
-func Run(text string) []Token {
-	l := newLexer(text)
+func Run(text string, filename string) []Token {
+	l := newLexer(text, filename)
 
 	matchBinNum := func(ch rune) bool {
 		return ch >= '0' && ch <= '1'
@@ -37,7 +37,7 @@ func Run(text string) []Token {
 
 	for !l.eof() {
 		var _ = l.parseChars("\t", TAB) ||
-			l.parseChars("\n", NEWLINE) ||
+			l.parseNewline() ||
 			l.parseWhitespace() ||
 			l.parseSingleLineComment() ||
 			l.parseMultiLineComment() ||
@@ -96,8 +96,12 @@ func Run(text string) []Token {
 	return tokens
 }
 
-func newLexer(text string) lexer {
-	return lexer{runes: []rune(text)}
+func newLexer(text string, filename string) lexer {
+	return lexer{
+		runes:    []rune(text),
+		currPos:  util.Position{File: filename},
+		startPos: util.Position{File: filename},
+	}
 }
 
 /* Helper methods */
@@ -111,13 +115,7 @@ func (l *lexer) peek() rune {
 		return 0
 	}
 
-	ch := l.runes[l.currPos.Idx]
-
-	if ch == '\r' {
-		return '\n'
-	}
-
-	return ch
+	return l.runes[l.currPos.Idx]
 }
 
 func (l *lexer) advance() rune {
@@ -225,6 +223,19 @@ func (l *lexer) parseChars(chars string, tokenType TokenType) bool {
 	}
 
 	l.commit(tokenType)
+	return true
+}
+
+func (l *lexer) parseNewline() bool {
+	ch := l.peek()
+
+	if ch != '\n' && ch != '\r' {
+		return false
+	}
+
+	l.advance()
+
+	l.commit(NEWLINE)
 	return true
 }
 
