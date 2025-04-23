@@ -1,0 +1,25 @@
+[compiler]
+version = "1.0.0"
+
+[projects.qcore]
+type = "library"
+dependencies = []
+
+[projects.qrepl]
+type = "executable"
+dependencies = [
+    { type = "internal", name = "qcore" },
+ 
+    # If there is a package manager in the future this 
+    { type = "manager", name = "uuid", version = "1.4.0" },
+    
+    # Needs to reference a directory with a project.yaml in it
+    { type = "git",  link = "github.com/...", dir = "directory", name = "faker", version = "~ 1.3.2" }
+]
+
+[projects.quartzc]
+type = "executable"
+dependencies = [
+    # Error: Referencing other executables is not possible
+    { type = "internal", name = "qrepl" },
+]

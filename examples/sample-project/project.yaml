@@ -1,0 +1,14 @@
+compiler:
+  version: 1.0.0
+
+projects:
+  - name: qcore
+    type: library
+    dependencies:
+      - github: 
+
+  - name: qrepl
+    type: executable
+
+  - name: quartc
+    type: executable
