@@ -387,6 +387,8 @@ func (l *lexer) parseIdentifierOrKeyword() bool {
 		l.commit(KEYWORD_LET)
 	case "const":
 		l.commit(KEYWORD_CONST)
+	case "ext":
+		l.commit(KEYWORD_EXT)
 	case "pub":
 		l.commit(KEYWORD_PUB)
 	case "fn":

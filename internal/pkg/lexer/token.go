@@ -57,6 +57,7 @@ const (
 	KEYWORD_LET_EXCLAMATION TokenType = "Keyword 'let!'"
 	KEYWORD_LET             TokenType = "Keyword 'let'"
 	KEYWORD_CONST           TokenType = "Keyword 'const'"
+	KEYWORD_EXT             TokenType = "Keyword 'ext'"
 	KEYWORD_PUB             TokenType = "Keyword 'pub'"
 	KEYWORD_FN              TokenType = "Keyword 'fn'"
 	KEYWORD_STRUCT          TokenType = "Keyword 'struct'"
