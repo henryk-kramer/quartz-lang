@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/henryk-kramer/quartz-lang/internal/pkg/lexer"
 )
 
@@ -12,23 +10,19 @@ type Error struct {
 }
 
 type parser struct {
-	tokens  []lexer.Token
-	program Program
-	errors  []Error
-	idx     int
+	tokens   []lexer.Token
+	program  Program
+	errors   []Error
+	startIdx int
+	currIdx  int
 }
 
 func Run(tokens []lexer.Token) (Program, []Error) {
 	p := newParser(tokens)
 
-	token := p.peekIgnoreSpace()
-
-	if token.Type == lexer.KEYWORD_NAMESPACE {
-		p.parseNamespace()
-	}
-
 	for !p.eof() {
 
+		p.advance()
 	}
 
 	return p.program, p.errors
@@ -41,7 +35,7 @@ func newParser(tokens []lexer.Token) parser {
 /* Helper methods */
 
 func (p *parser) eof() bool {
-	return p.idx >= len(p.tokens)
+	return p.currIdx >= len(p.tokens)
 }
 
 func (p *parser) whitespace() bool {
@@ -55,11 +49,11 @@ func (p *parser) peek() *lexer.Token {
 		return &lexer.Token{Type: lexer.EOF}
 	}
 
-	return &p.tokens[p.idx]
+	return &p.tokens[p.currIdx]
 }
 
 func (p *parser) peekIgnoreSpace() *lexer.Token {
-	idx := p.idx
+	idx := p.currIdx
 	for !p.eof() {
 		tokenType := p.tokens[idx].Type
 		if tokenType == lexer.WHITESPACE || tokenType == lexer.TAB || tokenType == lexer.NEWLINE {
@@ -74,13 +68,13 @@ func (p *parser) peekIgnoreSpace() *lexer.Token {
 }
 
 func (p *parser) advance() {
-	p.idx++
+	p.currIdx++
 }
 
 func (p *parser) advanceIgnoreSpace() {
 	for !p.eof() {
-		tokenType := p.tokens[p.idx].Type
-		p.idx++
+		tokenType := p.tokens[p.currIdx].Type
+		p.currIdx++
 
 		if tokenType == lexer.WHITESPACE || tokenType == lexer.TAB || tokenType == lexer.NEWLINE {
 			continue
@@ -90,62 +84,95 @@ func (p *parser) advanceIgnoreSpace() {
 	}
 }
 
+func (p *parser) commit() {
+	p.startIdx = p.currIdx
+}
+
+func (p *parser) commitErr(token lexer.Token, msg string) {
+	p.startIdx = p.currIdx
+	p.errors = append(p.errors, Error{token, msg})
+}
+
+func (p *parser) rollback() {
+	p.currIdx = p.startIdx
+}
+
 /* Parser methods */
 
-func (p *parser) parseNamespace() {
-	var identifiers []string
-
-	p.advanceIgnoreSpace() // skip 'namespace'
-
+func (p *parser) parseVisibility() *Visibility {
 	token := p.peekIgnoreSpace()
-	if token.Type != lexer.IDENTIFIER {
-		p.errors = append(p.errors, Error{
-			Token: *token,
-			Msg:   fmt.Sprintf("Expected an identifier but found %s", token.Type),
-		})
-	} else {
-		identifiers = append(identifiers, token.Literal)
+
+	var visibility Visibility
+
+	switch token.Type {
+	case lexer.KEYWORD_EXT:
+		p.commit()
+		visibility = EXTERNAL
+	case lexer.KEYWORD_PUB:
+		p.commit()
+		visibility = PUBLIC
+	default:
+		p.rollback()
+		visibility = PRIVATE
 	}
 
-	p.advanceIgnoreSpace()
-
-	for !p.eof() {
-		if p.whitespace() {
-			break
-		}
-
-		token = p.peek()
-		if token.Type != lexer.DOUBLE_SEMICOLON {
-			p.errors = append(p.errors, Error{
-				Token: *token,
-				Msg:   fmt.Sprintf("Expected :: but found %s", token.Type),
-			})
-		}
-
-		p.advance()
-
-		if p.whitespace() {
-			p.errors = append(p.errors, Error{
-				Token: *token,
-				Msg:   "Missing an identifer",
-			})
-			break
-		}
-
-		token = p.peek()
-		if token.Type != lexer.IDENTIFIER {
-			p.errors = append(p.errors, Error{
-				Token: *token,
-				Msg:   fmt.Sprintf("Expected an identifier but found %s", token.Type),
-			})
-		} else {
-			identifiers = append(identifiers, token.Literal)
-		}
-
-		p.advance()
-	}
-
-	p.program.Namespace = Namespace{
-		Identifiers: identifiers,
-	}
+	return &visibility
 }
+
+// func (p *parser) parseNamespace() *Namespace {
+// 	var identifiers []string
+
+// 	p.advanceIgnoreSpace() // skip 'namespace'
+
+// 	token := p.peekIgnoreSpace()
+// 	if token.Type != lexer.IDENTIFIER {
+// 		p.errors = append(p.errors, Error{
+// 			Token: *token,
+// 			Msg:   fmt.Sprintf("Expected an identifier but found %s", token.Type),
+// 		})
+// 	} else {
+// 		identifiers = append(identifiers, token.Literal)
+// 	}
+
+// 	p.advanceIgnoreSpace()
+
+// 	for !p.eof() {
+// 		if p.whitespace() {
+// 			break
+// 		}
+
+// 		token = p.peek()
+// 		if token.Type != lexer.DOUBLE_SEMICOLON {
+// 			p.errors = append(p.errors, Error{
+// 				Token: *token,
+// 				Msg:   fmt.Sprintf("Expected :: but found %s", token.Type),
+// 			})
+// 		}
+
+// 		p.advance()
+
+// 		if p.whitespace() {
+// 			p.errors = append(p.errors, Error{
+// 				Token: *token,
+// 				Msg:   "Missing an identifer",
+// 			})
+// 			break
+// 		}
+
+// 		token = p.peek()
+// 		if token.Type != lexer.IDENTIFIER {
+// 			p.errors = append(p.errors, Error{
+// 				Token: *token,
+// 				Msg:   fmt.Sprintf("Expected an identifier but found %s", token.Type),
+// 			})
+// 		} else {
+// 			identifiers = append(identifiers, token.Literal)
+// 		}
+
+// 		p.advance()
+// 	}
+
+// 	return &Namespace{
+// 		Identifiers: identifiers,
+// 	}
+// }
